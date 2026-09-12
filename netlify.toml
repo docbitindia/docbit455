@@ -1,0 +1,110 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[[redirects]]
+  from = "https://www.docbit.in/*"
+  to = "https://docbit.in/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/workspace"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/history"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/report"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth/login"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/auth/signup"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/password/reset"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs"
+  to = "/documentation"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/workspace*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/report*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/history*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/analyzing*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/editing*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[redirects]]
+  from = "/analyzing/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/editing/*"
+  to = "/index.html"
+  status = 200

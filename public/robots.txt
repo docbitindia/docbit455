@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /workspace
+Disallow: /history
+Disallow: /auth/
+Disallow: /password/
