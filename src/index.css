@@ -1,0 +1,763 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   DocBit Global Styles
+   ========================================================================== */
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* DocBit First Publish palette. */
+  
+  
+  --docbit-blue: #2563eb;
+  --docbit-blue-soft: #eef4ff;
+  --docbit-red: #dc2626;
+  --docbit-black: #111827;
+  --docbit-grey: #64748b;
+  --docbit-white: #ffffff;
+  --docbit-focus: var(--docbit-blue);
+  --docbit-selection: #dbeafe;
+
+  --docbit-border: #e1e4df;
+  --docbit-border-strong: #d1d5db;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding-top: var(--safe-top);
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+
+  background: #f7f8f6;
+  color: #111827;
+
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--docbit-selection);
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--docbit-focus);
+  outline-offset: 3px;
+}
+
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Scrollbars
+   ========================================================================== */
+
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #d3d6ce transparent;
+}
+
+.thin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: #d3d6ce;
+  border-radius: 8px;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: #b8bdb4;
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Shared Modal Action Buttons
+   ========================================================================== */
+
+/* Neutral secondary action used consistently for every Cancel button.
+   Destructive actions keep their red treatment; Cancel never competes with them. */
+.modal-cancel-button {
+  outline: none; border-radius: .5rem; border: 1px solid #E9EBE5; background: #fff; padding: .375rem .75rem; font-size: .75rem; font-weight: 600; color: #334155; box-shadow: 0 1px 2px rgba(17,24,39,.04); transition: background-color .2s;
+}
+
+.modal-cancel-button-lg {
+  outline: none; border-radius: .5rem; border: 1px solid #E9EBE5; background: #fff; padding: .5rem .75rem; font-size: .875rem; font-weight: 500; color: #334155; box-shadow: 0 1px 2px rgba(17,24,39,.04); transition: background-color .2s;
+}
+
+/* ==========================================================================
+   Reusable DocBit Utilities
+   ========================================================================== */
+
+.docbit-surface {
+  @apply rounded-2xl bg-white shadow-sm;
+
+  border: 1px solid var(--docbit-border);
+}
+
+.docbit-surface-hover {
+  @apply transition-all duration-300 ease-out;
+}
+
+.docbit-surface-hover:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(14, 138, 130, 0.25);
+
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.08),
+    0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.docbit-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(15, 23, 42, 0.08) 1px,
+    transparent 0
+  );
+
+  background-size: 22px 22px;
+}
+
+.docbit-glow {
+  background:
+    radial-gradient(
+      circle at 70% 20%,
+      rgba(14, 138, 130, 0.12),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(14, 138, 130, 0.08),
+      transparent 32%
+    );
+}
+
+/* ==========================================================================
+   Workspace Preview
+   ========================================================================== */
+
+.workspace-preview {
+  isolation: isolate;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.workspace-preview::before {
+  content: '';
+  position: absolute;
+  inset: 1rem;
+  z-index: -1;
+  border-radius: 2rem;
+  background: rgba(14, 138, 130, 0.14);
+  filter: blur(2rem);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.workspace-file-row,
+.workspace-project-card,
+.workspace-activity-item,
+.workspace-sidebar-item {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    color 220ms ease;
+}
+
+.workspace-file-row:hover {
+  transform: translateX(3px);
+}
+
+.workspace-project-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(14, 138, 130, 0.25);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
+
+.workspace-activity-item:hover {
+  transform: translateX(2px);
+  background-color: #ffffff;
+}
+
+.workspace-sidebar-item:hover {
+  transform: translateX(2px);
+}
+
+/* ==========================================================================
+   Existing Animations
+   ========================================================================== */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out both;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-sheet-up {
+  animation: sheet-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes count-fade {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count {
+  animation: count-fade 0.2s ease-out both;
+}
+
+/* ==========================================================================
+   Workspace Animations
+   ========================================================================== */
+
+@keyframes workspace-fade {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.workspace-fade {
+  animation: workspace-fade 500ms ease-out both;
+}
+
+@keyframes workspace-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.workspace-rise {
+  animation: workspace-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes workspace-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.workspace-pulse {
+  animation: workspace-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes workspace-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.workspace-float {
+  animation: workspace-float 5s ease-in-out infinite;
+}
+
+@keyframes workspace-float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.workspace-float-slow {
+  animation: workspace-float-slow 6.5s ease-in-out infinite;
+}
+
+@keyframes workspace-rotate-in {
+  from {
+    opacity: 0;
+    transform: rotateX(8deg) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateX(0) translateY(0);
+  }
+}
+
+.workspace-rotate-in {
+  transform-origin: center bottom;
+  animation: workspace-rotate-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ==========================================================================
+   Legacy Floating Card Animations
+   ========================================================================== */
+
+@keyframes float-0 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-1 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ==========================================================================
+   Stagger Helpers
+   ========================================================================== */
+
+.workspace-delay-1 {
+  animation-delay: 80ms;
+}
+
+.workspace-delay-2 {
+  animation-delay: 160ms;
+}
+
+.workspace-delay-3 {
+  animation-delay: 240ms;
+}
+
+.workspace-delay-4 {
+  animation-delay: 320ms;
+}
+
+.workspace-delay-5 {
+  animation-delay: 400ms;
+}
+
+.workspace-delay-6 {
+  animation-delay: 480ms;
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [style*='animation'] {
+    animation: none !important;
+  }
+
+  .workspace-preview,
+  .workspace-file-row,
+  .workspace-project-card,
+  .workspace-activity-item,
+  .workspace-sidebar-item,
+  .docbit-surface-hover:hover {
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   Mobile
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .workspace-preview::before {
+    inset: 0.5rem;
+    border-radius: 1.25rem;
+    filter: blur(1.25rem);
+  }
+}
+/* Workspace data-grid canvas: scrolling and table zoom are intentionally
+   isolated from the application chrome/sidebar. */
+.workspace-table-canvas {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.workspace-table-canvas table {
+  transform-origin: top left;
+}
+
+@media (max-width: 767px) {
+  .workspace-table-canvas {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: auto;
+  }
+}
+
+
+/* Data-grid header geometry: insertion gutters are part of the table grid. */
+.workspace-table-canvas thead th,
+.workspace-table-canvas tbody td { box-sizing: border-box; }
+.workspace-table-canvas thead { box-shadow: 0 1px 0 rgba(15,23,42,.16), 0 4px 10px rgba(15,23,42,.06); }
+@media (max-width: 640px) { .workspace-table-canvas thead th { min-height: 68px; } }
+
+
+/* Keep the workspace header readable and interaction-safe on touch screens. */
+.workspace-table-canvas thead th {
+  vertical-align: middle;
+}
+.workspace-table-canvas thead button {
+  touch-action: manipulation;
+}
+.workspace-table-canvas tbody tr {
+  min-height: 44px;
+}
+
+
+/* Cell insertion controls sit on the row boundary, outside the selected
+   cell, so they never cover or visually merge with the cell value. */
+.cell-insert-boundary {
+  isolation: isolate;
+}
+
+.cell-insert-before {
+  top: -5px;
+}
+
+.cell-insert-after {
+  bottom: -5px;
+}
+
+/* The data grid owns its touch gestures; focusing the search field must not
+   change pinch/trackpad handling inside the grid. */
+.workspace-table-canvas {
+  touch-action: pan-x pan-y;
+}
+
+@media (max-width: 767px) {
+  .cell-insert-before { top: -5px; }
+  .cell-insert-after { bottom: -5px; }
+}
+
+
+/* Global cloud coming-soon animation */
+.coming-soon-orbit { position: relative; width: 82px; height: 82px; display: flex; align-items: center; justify-content: center; }
+.coming-soon-orbit-ring { position: absolute; inset: 7px; border: 2px solid #dbeafe; border-top-color: #2563eb; border-radius: 999px; animation: coming-soon-spin 1.7s linear infinite; }
+.coming-soon-icon { position: relative; z-index: 1; width: 50px; height: 50px; display:flex; align-items:center; justify-content:center; border:1px solid #d1d5db; border-radius:16px; background:#fff; color:#2563eb; box-shadow:0 8px 22px rgba(15,23,42,.08); animation: coming-soon-breathe 1.8s ease-in-out infinite; }
+.coming-soon-dot { position:absolute; width:6px; height:6px; border-radius:999px; background:#94a3b8; animation: coming-soon-pulse 1.4s ease-in-out infinite; }
+.coming-soon-dot-1 { top:7px; right:14px; } .coming-soon-dot-2 { bottom:8px; left:13px; animation-delay:.25s; } .coming-soon-dot-3 { top:29px; left:1px; animation-delay:.5s; }
+@keyframes coming-soon-spin { to { transform: rotate(360deg); } }
+@keyframes coming-soon-breathe { 50% { transform: scale(1.05); } }
+@keyframes coming-soon-pulse { 50% { opacity:.35; transform: scale(.72); } }
+@media (prefers-reduced-motion: reduce) { .coming-soon-orbit-ring,.coming-soon-icon,.coming-soon-dot { animation:none; } }
+
+/* ========================================================================== 
+   DocBit SaaS system — v17
+   ========================================================================== */
+
+:root{
+  --db-bg:#f6f8fb;
+  --db-text:#0f172a;
+  --db-muted:#64748b;
+  --db-border:#e2e8f0;
+  --db-blue:#2563eb;
+}
+body{background:var(--db-bg);color:var(--db-text)}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+.btn-primary,.btn-secondary,.btn-ghost,.btn-primary-lg,.btn-secondary-lg,.btn-disabled{display:inline-flex;align-items:center;gap:.5rem;border-radius:.8rem;font-weight:650;transition:.18s ease}
+.btn-primary{background:#0f172a;color:#fff;padding:.65rem .9rem;font-size:.8rem}.btn-primary:hover{background:#1e293b;transform:translateY(-1px)}
+.btn-primary-lg{background:#2563eb;color:#fff;padding:.85rem 1.1rem;font-size:.9rem;box-shadow:0 8px 22px rgba(37,99,235,.2)}.btn-primary-lg:hover{background:#1d4ed8;transform:translateY(-1px)}
+.btn-secondary{background:#fff;border:1px solid var(--db-border);color:#334155;padding:.65rem .9rem;font-size:.8rem}.btn-secondary:hover,.btn-secondary-lg:hover{background:#f8fafc;border-color:#cbd5e1}
+.btn-secondary-lg{background:#fff;border:1px solid var(--db-border);color:#334155;padding:.85rem 1.1rem;font-size:.9rem}
+.btn-ghost{color:#475569;padding:.65rem .8rem;font-size:.85rem}.btn-ghost:hover{color:#0f172a;background:#f8fafc}
+.btn-disabled{background:#e2e8f0;color:#94a3b8;padding:.65rem .9rem;font-size:.8rem}
+.mobile-menu-item{padding:.8rem .75rem;text-align:left;border-radius:.75rem;color:#475569;font-size:.9rem}.mobile-menu-item:hover{background:#f8fafc;color:#0f172a}
+.app-nav{display:flex;width:100%;align-items:center;gap:.75rem;border-radius:.8rem;padding:.72rem .8rem;color:#64748b;font-size:.82rem;font-weight:600;text-align:left}.app-nav:hover{background:#f8fafc;color:#0f172a}.app-nav-active{background:#eff6ff;color:#2563eb}
+.mobile-bottom-nav{position:fixed;inset:auto 0 0;z-index:60;display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;border-top:1px solid #e2e8f0;background:rgba(255,255,255,.96);padding:.45rem .5rem calc(.45rem + var(--safe-bottom));backdrop-filter:blur(18px)}.mobile-bottom-nav button{display:flex;min-width:0;flex-direction:column;align-items:center;gap:.2rem;border-radius:.7rem;padding:.45rem .2rem;color:#64748b;font-size:9px;font-weight:650}.mobile-bottom-nav .mobile-nav-active{background:#eff6ff;color:#2563eb}
+.avatar-button{display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:50%;background:#e2e8f0;color:#334155;font-size:.75rem;font-weight:700}.surface-card{border:1px solid #e2e8f0;border-radius:1.15rem;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.03)}.project-card{padding:1.25rem;transition:.18s ease}.project-card:hover{transform:translateY(-2px);border-color:#bfdbfe;box-shadow:0 14px 35px rgba(15,23,42,.07)}
+.project-icon{display:inline-flex;height:38px;width:38px;align-items:center;justify-content:center;border-radius:.75rem;background:#eff6ff;color:#2563eb}.file-chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #e2e8f0;border-radius:.7rem;background:#fff;padding:.4rem .65rem;font-size:.72rem;font-weight:600;color:#64748b}.activity-row{display:flex;width:100%;align-items:center;gap:.75rem;border:1px solid #e2e8f0;border-radius:1rem;background:#fff;padding:.85rem 1rem;transition:.18s ease}.activity-row:hover{border-color:#bfdbfe;box-shadow:0 8px 22px rgba(15,23,42,.05)}.activity-row strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;font-weight:650;color:#334155}.activity-row small{display:block;margin-top:.2rem;font-size:.68rem;color:#94a3b8}.activity-icon{display:flex;height:36px;width:36px;flex:none;align-items:center;justify-content:center;border-radius:.7rem;background:#f8fafc;color:#64748b}.search-box{display:flex;align-items:center;gap:.65rem;border:1px solid #e2e8f0;border-radius:.8rem;background:#fff;padding:.65rem .85rem;flex:1;min-width:220px;color:#94a3b8}.search-box input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:.82rem;color:#0f172a}.field{display:grid;gap:.45rem}.field>span,.field-label{font-size:.72rem;font-weight:650;color:#475569}.field em{font-style:normal;font-weight:500;color:#94a3b8}.field-wrap{display:flex;align-items:center;gap:.55rem;border:1px solid #dbe3ed;border-radius:.8rem;background:#fff;padding:.68rem .8rem;color:#94a3b8}.field-wrap input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:.85rem;color:#0f172a}.field-wrap button{color:#94a3b8}.input{width:100%;border:1px solid #dbe3ed;border-radius:.8rem;background:#fff;padding:.7rem .8rem;outline:0;font-size:.85rem;color:#0f172a}.input:focus,.field-wrap:focus-within,.search-box:focus-within{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-size:.7rem;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:#2563eb}.dot-blue{height:7px;width:7px;border-radius:50%;background:#2563eb}.hero-grid{background-size:24px 24px;background-image:linear-gradient(rgba(15,23,42,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.035) 1px,transparent 1px)}.hero-window{overflow:hidden;border:1px solid rgba(148,163,184,.4);border-radius:1.5rem;background:#fff;box-shadow:0 35px 80px rgba(15,23,42,.15),0 8px 24px rgba(37,99,235,.08);transform:rotate(.35deg)}.section-kicker{font-size:.7rem;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:#2563eb}.section-title{margin-top:.65rem;max-width:760px;font-size:clamp(2rem,4vw,3.4rem);line-height:1.03;font-weight:650;letter-spacing:-.05em}.section-copy{margin-top:1rem;max-width:650px;font-size:1rem;line-height:1.75;color:#64748b}.feature-icon{display:flex;height:42px;width:42px;align-items:center;justify-content:center;border-radius:.9rem;background:#eff6ff;color:#2563eb}.dark-card{border:1px solid rgba(148,163,184,.18);border-radius:1.25rem;background:rgba(255,255,255,.05);padding:1.25rem}.dark-card span{font-size:.68rem;font-weight:700}.dark-card h3{margin-top:2.5rem;font-size:1rem}.dark-card p{margin-top:.35rem;font-size:.75rem;line-height:1.6;color:#94a3b8}.public-title{margin-top:1rem;max-width:800px;font-size:clamp(2.5rem,6vw,4.8rem);line-height:1;letter-spacing:-.06em;font-weight:650}.public-lead{margin-top:1.5rem;max-width:760px;font-size:1.05rem;line-height:1.8;color:#64748b}.public-grid{display:grid;gap:1rem;margin-top:3rem;grid-template-columns:repeat(3,1fr)}.public-grid article{border:1px solid #e2e8f0;border-radius:1.25rem;padding:1.5rem}.public-grid h2{font-size:1.05rem;font-weight:650}.public-grid p{margin-top:.6rem;font-size:.85rem;line-height:1.7;color:#64748b}.prose-doc{margin-top:3rem;display:grid;gap:1.8rem}.prose-doc h2{font-size:1.2rem;font-weight:650}.prose-doc p{margin-top:-1.2rem;font-size:.9rem;line-height:1.8;color:#64748b}
+.skeleton{animation:pulse 1.4s ease-in-out infinite;border-radius:1rem;background:#e2e8f0}@keyframes pulse{50%{opacity:.55}}
+@media(max-width:767px){.public-grid{grid-template-columns:1fr}.hero-window{transform:none}.section-title{font-size:2.35rem}}
+
+/* SaaS workspace controls */
+.filter-chip { @apply inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 font-medium; }
+.icon-button { @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700; }
+.role-badge { @apply inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.08em]; }
+.role-editor { @apply border-blue-200 bg-blue-50 text-blue-700; }
+.role-member { @apply border-slate-200 bg-slate-50 text-slate-600; }
+.role-owner { @apply border-emerald-200 bg-emerald-50 text-emerald-700; }
+.folder-row { @apply flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-slate-600 hover:bg-slate-50; }
+.folder-row span { @apply ml-auto text-[10px] text-slate-400; }
+.folder-row-active { @apply bg-blue-50 text-blue-700; }
+.status-badge { @apply inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold; }
+
+.header-icon-button{height:36px;width:36px;background:#fff;border:1px solid #e2e8f0}.profile-dropdown{position:absolute;right:0;top:calc(100% + .55rem);width:170px;border:1px solid #e2e8f0;border-radius:.9rem;background:#fff;padding:.35rem;box-shadow:0 18px 40px rgba(15,23,42,.12)}.profile-dropdown button{display:flex;width:100%;align-items:center;gap:.65rem;border-radius:.65rem;padding:.65rem .7rem;text-align:left;font-size:.8rem;font-weight:600;color:#475569}.profile-dropdown button:hover{background:#f8fafc;color:#0f172a}.project-menu{position:absolute;right:.7rem;top:2.7rem;z-index:20;width:150px;border:1px solid #e2e8f0;border-radius:.8rem;background:#fff;padding:.3rem;box-shadow:0 16px 35px rgba(15,23,42,.12)}.project-menu button{display:block;width:100%;border-radius:.55rem;padding:.55rem .65rem;text-align:left;font-size:.75rem;font-weight:600;color:#475569}.project-menu button:hover{background:#f8fafc;color:#0f172a}
+
+/* ==========================================================================
+   Data grid navigation + modern processing transition
+   ========================================================================== */
+.fast-row-nav {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  bottom: 14px;
+  z-index: 60;
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 5px;
+  border: 1px solid rgba(148,163,184,.32);
+  border-radius: 18px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 10px 28px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  user-select: none;
+  touch-action: none;
+}
+.fast-row-nav-track {
+  position: relative;
+  flex: 1;
+  width: 20px;
+  min-height: 90px;
+  border: 1px solid #dbe3ed;
+  border-radius: 999px;
+  background: #f1f5f9;
+  overflow: hidden;
+  cursor: pointer;
+}
+.fast-row-nav-progress {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  border-radius: inherit;
+  background: rgba(37,99,235,.12);
+  pointer-events: none;
+}
+.fast-row-nav-thumb {
+  position: absolute;
+  left: -3px;
+  width: 24px;
+  min-height: 78px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(180deg,#2563eb,#1d4ed8);
+  box-shadow: 0 5px 14px rgba(37,99,235,.32), 0 1px 4px rgba(15,23,42,.18);
+  cursor: grab;
+  touch-action: none;
+}
+.fast-row-nav-thumb:hover { filter: brightness(1.05); transform: scaleX(1.08); }
+.fast-row-nav-thumb:active { cursor: grabbing; transform: scaleX(1.12); }
+.fast-row-nav-grip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 28px;
+  transform: translate(-50%,-50%);
+  border-top: 2px solid rgba(255,255,255,.75);
+  border-bottom: 2px solid rgba(255,255,255,.75);
+}
+.fast-row-nav-btn {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #fff;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(15,23,42,.06);
+  transition: .16s ease;
+}
+.fast-row-nav-btn:hover { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+.fast-row-nav-label {
+  max-width: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 8px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: #64748b;
+}
+@keyframes db-progress { 0% { transform: translateX(-100%); } 100% { transform: translateX(160%); } }
+@media (max-width: 767px) {
+  .fast-row-nav { right: 6px; width: 50px; border-radius: 19px; padding: 8px 6px; }
+  .fast-row-nav-track { width: 20px; }
+  .fast-row-nav-thumb { width: 23px; left: -3px; min-height: 82px; }
+  .fast-row-nav-btn { width: 34px; height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fast-row-nav-thumb, .fast-row-nav-btn { transition: none; }
+  [class*="db-progress"] { animation: none !important; }
+}
+CSS
+
+/* Modern data-surface ergonomics */
+.workspace-table-canvas {
+  scrollbar-width: auto;
+  scrollbar-color: #94a3b8 #eef2f7;
+}
+.workspace-table-canvas::-webkit-scrollbar { width: 14px; height: 14px; }
+.workspace-table-canvas::-webkit-scrollbar-track { background: #f1f5f9; border-left: 1px solid #e2e8f0; }
+.workspace-table-canvas::-webkit-scrollbar-thumb { background: #94a3b8; border: 3px solid #f1f5f9; border-radius: 999px; min-height: 72px; }
+.workspace-table-canvas::-webkit-scrollbar-thumb:hover { background: #64748b; }
+.workspace-table-canvas::-webkit-scrollbar-corner { background: #f1f5f9; }
+@media (max-width: 767px) {
+  .workspace-table-canvas::-webkit-scrollbar { width: 11px; height: 11px; }
+}
