@@ -710,11 +710,7 @@ export function Editing({
               style={{
                 width: tableWidth,
                 minWidth: tableWidth,
-                tableLayout: 'fixed',
-                // CSS zoom participates in layout, unlike transform: scale().
-                // This keeps sticky headers, hit targets and scroll geometry aligned.
-                zoom,
-                willChange: 'zoom'
+ tableLayout: 'fixed'
               }}
             >
               {/* ====================================================

@@ -746,8 +746,6 @@ button:disabled{cursor:not-allowed}
   .fast-row-nav-thumb, .fast-row-nav-btn { transition: none; }
   [class*="db-progress"] { animation: none !important; }
 }
-CSS
-
 /* Modern data-surface ergonomics */
 .workspace-table-canvas {
   scrollbar-width: auto;

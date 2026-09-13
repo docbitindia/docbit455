@@ -32,8 +32,10 @@ export function AnalyzePage() {
   const [started, setStarted] = useState(false);
   const [preparingEditor, setPreparingEditor] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [stageLabel, setStageLabel] = useState('Preparing file');
+  const [stageLabel, setStageLabel] = useState('Reading file');
+  const [elapsed, setElapsed] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
+  const startTimeRef = useRef(0);
 
   useEffect(() => {
     if (started) return;
@@ -46,33 +48,36 @@ export function AnalyzePage() {
     }
     setFile(pending);
     setFileName(pending.name);
+    startTimeRef.current = Date.now();
     const controller = new AbortController();
     abortRef.current = controller;
+
+    const timer = setInterval(() => setElapsed(Date.now() - startTimeRef.current), 100);
+
     const run = async () => {
-      const tick = (n: number) => new Promise<void>(resolve => requestAnimationFrame(() => setTimeout(() => { setStep(n); resolve(); }, 100)));
       try {
-        await tick(0);
         setStageLabel('Reading file');
         const dataset = await parseFile(pending, { onProgress: (value) => setProgress(value), signal: controller.signal });
         if (controller.signal.aborted) throw new AdapterError('Processing cancelled.');
         setProgress(100);
-        await tick(1);
+        setStep(1);
         setStageLabel('Detecting structure');
         const headerRowIndex = guessHeaderRow(dataset.rows);
-        await tick(2);
+        setStep(2);
         setStageLabel('Analyzing columns');
         const builtSchema = buildSchema(dataset, headerRowIndex);
-        await tick(3);
+        setStep(3);
         setStageLabel('Checking data quality');
-        await tick(4);
+        setStep(4);
         setStageLabel('Preparing editor');
-        await tick(5);
         const config = createDefaultConfig(builtSchema, dataset.meta.fileName);
         session.replaceAll({ raw: dataset, config });
         setSchema(builtSchema);
         recordFileHistory({ fileName: pending.name, fileSize: pending.size, fileType: dataset.meta.fileType }, 'opened');
         setStage('summary');
+        clearInterval(timer);
       } catch (err) {
+        clearInterval(timer);
         if (controller.signal.aborted) return;
         const message = err instanceof AdapterError ? err.message : "We couldn't read this file. It may be corrupted or unsupported.";
         setError(message);
@@ -81,42 +86,85 @@ export function AnalyzePage() {
       }
     };
     void run();
+    return () => clearInterval(timer);
   }, [started, session.replaceAll, toast]);
 
   const continueToEditing = () => {
     if (!schema || !file || preparingEditor) return;
     setPreparingEditor(true);
-    // Persist immediately, then yield twice so the preparation overlay paints
-    // before the editor mounts. No arbitrary timeout is used.
     setEditingSession(session.state, session.state, file);
     const base = file.name.replace(/\.[^.]+$/, '').trim() || 'untitled';
     requestAnimationFrame(() => requestAnimationFrame(() => navigate(`/editing/${encodeURIComponent(base)}`)));
   };
 
   if (stage === 'error') {
-    return <div className="min-h-screen bg-paper-50"><div className="mx-auto flex min-h-screen max-w-xl items-center justify-center px-5"><div className="w-full rounded-2xl border border-rose-200 bg-white p-6 shadow-panel"><h1 className="text-lg font-semibold text-ink-900">Unable to analyze file</h1><p className="mt-2 text-sm text-ink-600/70">{error}</p><button type="button" onClick={() => navigate('/')} className="mt-5 rounded-xl bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white">Start over</button></div></div></div>;
-  }
-
-  return <div className="min-h-screen bg-paper-50">
-    {preparingEditor && (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/30 p-5 backdrop-blur-sm animate-fade-in" role="status" aria-live="polite">
-        <div className="w-full max-w-sm rounded-3xl border border-white/70 bg-white/95 p-7 text-center shadow-2xl">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-            <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-blue-100 border-t-blue-600" />
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="mx-auto flex min-h-screen max-w-xl items-center justify-center px-5">
+          <div className="w-full rounded-2xl border border-rose-200 bg-white p-6 shadow-lg">
+            <h1 className="text-lg font-semibold text-slate-900">Unable to analyze file</h1>
+            <p className="mt-2 text-sm text-slate-500">{error}</p>
+            <div className="mt-5 flex gap-2">
+              <button type="button" onClick={() => navigate('/workspace')} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Back to workspace</button>
+              <button type="button" onClick={() => { setStage('loading'); setError(null); setStarted(false); }} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Try again</button>
+            </div>
           </div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-blue-600">Finalizing workspace</p>
-          <h2 className="mt-2 text-lg font-semibold text-slate-900">Preparing your editor…</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-500">Your data is ready. We’re setting up the editing surface and keeping the transition smooth.</p>
-          <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-2/3 animate-[db-progress_0.9s_ease-in-out_infinite] rounded-full bg-blue-600" /></div>
         </div>
       </div>
-    )}
-    <header className="flex items-center justify-between border-b border-[#e1e4df] bg-white px-3 py-2.5 sm:px-5">
-      <button type="button" onClick={() => navigate('/')} className="focus-ring inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-ink-700 hover:bg-white"><ArrowLeft size={16}/> Back</button>
-      <button type="button" onClick={() => { abortRef.current?.abort(); navigate('/'); }} className="focus-ring inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-ink-700 hover:bg-white"><RotateCcw size={15}/> Replace</button>
-    </header>
-    <main className="px-5 py-14 sm:px-8 sm:py-20">
-    {stage === 'loading' && <div className="flex flex-col items-center justify-center gap-4"><AnalysisSequence fileName={fileName} activeIndex={step} /><div className="w-full max-w-md"><div className="h-1.5 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-blue-600 transition-[width] duration-200" style={{width:`${Math.max(2,progress)}%`}}/></div><div className="mt-2 flex items-center justify-between text-[11px] text-slate-500"><span>{stageLabel}</span><span>{progress}%</span></div><button type="button" onClick={() => { abortRef.current?.abort(); navigate('/'); }} className="focus-ring mt-4 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel processing</button></div></div>}
-    {stage === 'summary' && schema && <div className="flex justify-center"><DatasetSummary raw={session.state.raw} schema={schema} onContinue={continueToEditing} /></div>}
-  </main></div>;
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {preparingEditor && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/30 p-5 backdrop-blur-sm animate-fade-in" role="status" aria-live="polite">
+          <div className="w-full max-w-sm rounded-3xl border border-white/70 bg-white/95 p-7 text-center shadow-2xl">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+              <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-blue-100 border-t-blue-600" />
+            </div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-blue-600">Finalizing workspace</p>
+            <h2 className="mt-2 text-lg font-semibold text-slate-900">Preparing your editor…</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Your data is ready. Setting up the editing surface now.</p>
+            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full w-2/3 animate-[db-progress_0.9s_ease-in-out_infinite] rounded-full bg-blue-600" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
+        <button type="button" onClick={() => navigate('/workspace')} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+          <ArrowLeft size={16} /> Back
+        </button>
+        <button type="button" onClick={() => { abortRef.current?.abort(); navigate('/workspace'); }} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+          <RotateCcw size={15} /> Replace file
+        </button>
+      </header>
+
+      <main className="px-5 py-12 sm:px-8 sm:py-16">
+        {stage === 'loading' && (
+          <div className="flex flex-col items-center justify-center gap-6">
+            <AnalysisSequence fileName={fileName} activeIndex={step} />
+            <div className="w-full max-w-md">
+              <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+                <div className="h-full rounded-full bg-blue-600 transition-[width] duration-200" style={{ width: `${Math.max(2, progress)}%` }} />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+                <span>{stageLabel}</span>
+                <span>{progress}% · {(elapsed / 1000).toFixed(1)}s</span>
+              </div>
+              <button type="button" onClick={() => { abortRef.current?.abort(); navigate('/workspace'); }} className="mt-4 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                Cancel processing
+              </button>
+            </div>
+          </div>
+        )}
+        {stage === 'summary' && schema && (
+          <div className="flex justify-center">
+            <DatasetSummary raw={session.state.raw} schema={schema} onContinue={continueToEditing} />
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
